@@ -64,40 +64,44 @@ app.get('/data.json', (req, res) => {
       });
     });
   });
-  app.delete('/api/data/:id', (req, res) => {
-    const id = req.params.id;
+// ...
+
+app.delete('/api/data/delete/:id', (req, res) => {
+  const id = req.params.id;
+  console.log('Received delete request for task ID:', id);
   
-    // Read the existing data from data.json
-    fs.readFile('data.json', 'utf8', (err, data) => {
+  // Read the existing data from data.json
+  fs.readFile('data.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    let jsonData = JSON.parse(data);
+
+    // Find the index of the data item with the specified id
+    const index = jsonData.findIndex(item => item.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Data not found' });
+    }
+
+    // Remove the data item from the array
+    jsonData.splice(index, 1);
+
+    // Write the updated data back to data.json
+    fs.writeFile('data.json', JSON.stringify(jsonData), err => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
       }
-  
-      let jsonData = JSON.parse(data);
-  
-      // Find the index of the data item with the specified id
-      const index = jsonData.findIndex(item => item.id === id);
-  
-      if (index === -1) {
-        return res.status(404).json({ error: 'Data not found' });
-      }
-  
-      // Remove the data item from the array
-      jsonData.splice(index, 1);
-  
-      // Write the updated data back to data.json
-      fs.writeFile('data.json', JSON.stringify(jsonData), err => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-  
-        // Return a success response
-        res.json({ message: 'Data deleted successfully' });
-      });
+
+      // Return a success response
+      res.json({ message: 'Data deleted successfully' });
     });
   });
+});
+
 
 
   const port = 3444;
