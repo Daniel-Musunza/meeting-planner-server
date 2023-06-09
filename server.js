@@ -1,14 +1,18 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const path = require('path');
 const fs = require('fs');
 
 // Enable CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // Update the origin to restrict access to specific domains
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*'); // Update the origin to restrict access to specific domains
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   next();
+// });
+app.use(cors({
+  origin: 'http://192.168.0.112:8080',
+}));
 
 // Parse JSON bodies
 app.use(express.json());
@@ -60,7 +64,40 @@ app.get('/data.json', (req, res) => {
       });
     });
   });
-
+  app.delete('/api/data/:id', (req, res) => {
+    const id = req.params.id;
+  
+    // Read the existing data from data.json
+    fs.readFile('data.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      let jsonData = JSON.parse(data);
+  
+      // Find the index of the data item with the specified id
+      const index = jsonData.findIndex(item => item.id === id);
+  
+      if (index === -1) {
+        return res.status(404).json({ error: 'Data not found' });
+      }
+  
+      // Remove the data item from the array
+      jsonData.splice(index, 1);
+  
+      // Write the updated data back to data.json
+      fs.writeFile('data.json', JSON.stringify(jsonData), err => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+  
+        // Return a success response
+        res.json({ message: 'Data deleted successfully' });
+      });
+    });
+  });
 
 
   const port = 3444;
