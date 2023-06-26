@@ -5,14 +5,14 @@ const path = require('path');
 const fs = require('fs');
 
 // Enable CORS
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*'); // Update the origin to restrict access to specific domains
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   next();
-// });
-app.use(cors({
-  origin: 'http://192.168.0.112:8080',
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Update the origin to restrict access to specific domains
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+// app.use(cors({
+//   origin: 'http://localhost:8081',
+// }));
 
 // Parse JSON bodies
 app.use(express.json());
@@ -105,7 +105,7 @@ app.delete('/api/data/delete/:id', (req, res) => {
 
 
   const port = 3444;
-  const hostname = '192.168.0.112'; // Replace with your server's IP address
+  const hostname = 'localhost'; // Replace with your server's IP address
   app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
   });
