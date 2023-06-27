@@ -6,10 +6,13 @@ const fs = require('fs');
 
 // Enable CORS
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // Update the origin to restrict access to specific domains
+  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE'); // Add 'DELETE' to the allowed methods
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+// app.use(cors());
+
 
 // Parse JSON bodies
 app.use(express.json());
